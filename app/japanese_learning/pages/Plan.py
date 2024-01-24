@@ -2,11 +2,14 @@ from datetime import date
 
 import pandas as pd
 import streamlit as st
-from utils.data import build_grammar_data, build_study_data
+from utils.data import build_grammar_data, build_study_data, load_grammar_data
+
+st.cache_data.clear()
 
 st.markdown("# Study Plan")
 
-study_data = build_study_data()
+grammar_data = load_grammar_data()
+study_data = build_study_data(grammar_data)
 
 df = pd.DataFrame(study_data)
 
@@ -22,13 +25,8 @@ df.drop(
     inplace=True,
 )
 
-st.data_editor(
+st.dataframe(
     df,
-    column_config={
-        "grammar_1": st.column_config.TextColumn("Grammar 1"),
-        "grammar_2": st.column_config.TextColumn("Grammar 2"),
-        "grammar_3": st.column_config.TextColumn("Grammar 3"),
-    },
     hide_index=True,
     use_container_width=True,
 )

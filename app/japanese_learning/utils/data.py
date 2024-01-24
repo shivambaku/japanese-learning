@@ -1,6 +1,11 @@
 import random
 from functools import cache
 
+import numpy as np
+import pandas as pd
+import streamlit as st
+from streamlit_gsheets import GSheetsConnection
+
 
 @cache
 def build_grammar_data():
@@ -26,15 +31,33 @@ def build_grammar_data():
     return grammar_data
 
 
-@cache
-def build_study_data():
-    grammar_data = build_grammar_data()
+def load_grammar_data():
+    conn = st.connection("gsheets", type=GSheetsConnection)
+    df = conn.read(usecols=[0, 1, 2, 3])
+    df.dropna(how="all", inplace=True)
+    df["examples"] = df["examples"].apply(lambda x: eval(x))
+    df = df.replace(np.nan, None)
+    return df
+
+
+def update_grammar_data(df: pd.DataFrame):
+    conn = st.connection("gsheets", type=GSheetsConnection)
+    conn.update(data=df)
+
+
+def build_study_data(grammar_data):
+    grammar_data = grammar_data.to_dict("records")
+
     if len(grammar_data) % 3 != 0:
         assert False, "The number of grammar points is not divisible by 3"
 
     study_data = []
-
     for i in range(0, len(grammar_data), 3):
+        completed = (
+            grammar_data[i]["completed_at"] is not None
+            and grammar_data[i + 1]["completed_at"] is not None
+            and grammar_data[i + 2]["completed_at"] is not None
+        )
         study_data.append(
             {
                 "grammar_1": grammar_data[i]["title"],
@@ -46,16 +69,16 @@ def build_study_data():
                 "grammar_3": grammar_data[i + 2]["title"],
                 "grammar_3_examples": grammar_data[i + 2]["examples"],
                 "grammar_3_index": i + 2,
-                "completed": False,
+                "completed": completed,
             }
         )
     return study_data
 
 
-def build_review(current_study_data):
-    grammar_data = build_grammar_data()
-    study_data = build_study_data()
+def build_review(grammar_data, study_data):
+    grammar_data = grammar_data.to_dict("records")
 
+    current_study_data = [study for study in study_data if not study["completed"]][0]
     completed_study_data = [study for study in study_data if study["completed"]]
     completed_grammar_indexes = [
         current_study_data["grammar_1_index"],

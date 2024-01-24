@@ -8,6 +8,7 @@ numpy = "*"
 pandas = "*"
 streamlit = "*"
 altair = "*"
+st-gsheets-connection = "*"
 
 [dev-packages]
 pytest = "*"
