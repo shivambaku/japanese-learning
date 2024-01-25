@@ -19,7 +19,11 @@ study_data = build_study_data(grammar_data)
 grammar_complete = grammar_data["completed_at"].notnull().sum()
 grammar_total = len(grammar_data)
 grammar_complete_ratio = grammar_complete / grammar_total
-st.progress(grammar_complete_ratio, text=f"{grammar_complete}/{grammar_total}")
+grammar_complete_percentage = round(grammar_complete_ratio * 100, 2)
+st.progress(
+    grammar_complete_ratio,
+    text=f"{grammar_complete}/{grammar_total} ({grammar_complete_percentage}%)",
+)
 
 first_not_completed = [study for study in study_data if not study["completed"]][0]
 
@@ -51,7 +55,8 @@ for example in review:
 if st.button("Mark as completed"):
     for i in range(MAX_GRAMMAR_PER_DAY):
         grammar_index = first_not_completed[f"grammar_{i+1}_index"]
-        grammar_data.loc[grammar_index, "completed_at"] = datetime.now()
+        filter_condition = grammar_data["grammar_num"] == grammar_index
+        grammar_data.loc[filter_condition, "completed_at"] = datetime.now()
 
     update_grammar_data(grammar_data)
 

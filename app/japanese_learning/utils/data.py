@@ -91,7 +91,7 @@ def build_review(grammar_data, study_data):
         completed_grammar_indexes.append(study["grammar_3_index"])
 
     review = []
-    for j in range(0, 10):
+    for j in range(0, 15):
         random_grammar_index = random.choice(completed_grammar_indexes)
         random_example = random.choice(grammar_data[random_grammar_index]["examples"])
 
