@@ -61,14 +61,14 @@ def build_study_data(grammar_data):
         study_data.append(
             {
                 "grammar_1": grammar_data[i]["title"],
-                "grammar_1_index": i,
+                "grammar_1_index": int(grammar_data[i]["grammar_num"]),
                 "grammar_1_examples": grammar_data[i]["examples"],
                 "grammar_2": grammar_data[i + 1]["title"],
                 "grammar_2_examples": grammar_data[i + 1]["examples"],
-                "grammar_2_index": i + 1,
+                "grammar_2_index": int(grammar_data[i + 1]["grammar_num"]),
                 "grammar_3": grammar_data[i + 2]["title"],
                 "grammar_3_examples": grammar_data[i + 2]["examples"],
-                "grammar_3_index": i + 2,
+                "grammar_3_index": int(grammar_data[i + 2]["grammar_num"]),
                 "completed": completed,
             }
         )

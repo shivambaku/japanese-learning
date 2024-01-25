@@ -10,10 +10,16 @@ from utils.data import (
 
 st.cache_data.clear()
 
+
 MAX_GRAMMAR_PER_DAY = 3
 
 grammar_data = load_grammar_data()
 study_data = build_study_data(grammar_data)
+
+grammar_complete = grammar_data["completed_at"].notnull().sum()
+grammar_total = len(grammar_data)
+grammar_complete_ratio = grammar_complete / grammar_total
+st.progress(grammar_complete_ratio, text=f"{grammar_complete}/{grammar_total}")
 
 first_not_completed = [study for study in study_data if not study["completed"]][0]
 
